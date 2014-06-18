@@ -1,0 +1,71 @@
+---
+title       : Ring my Bell... Curve!
+subtitle    : A little Shiny App to manipulate the Normal Distribution
+author      : Francesco Giovinazzi
+job         : 
+framework   : io2012        
+highlighter : highlight.js  
+widgets     : [mathjax] 
+mode        : selfcontained 
+---
+
+## The idea
+The normal distribution is probably the most famous and widely used statistical model, its relevance in all the fields of natural and social sciences can not be denied.   
+
+In my personal experience as Teaching Assistant at the University of Perugia (Italy), I have found particularly important for students who first approach to the study of any statistical distribution (or density function) to master as soon as possible its geometrical interpratation. 
+
+For this reason I have decided to create a simple and easy-to-use shiny app, conceived as a teaching tool, that allows the student to see directly the effects of changes of the parameters on the distribution shape. 
+
+Everybody knows that the shape of the normal distribution resembles that of a bell, so it sometimes is referred to as the "bell curve". The title of my project is **"Ring my Bell... Curve!"** and recalls the famous 70s hit of Anita Ward. ;)
+
+--- 
+
+## Choose the parameters
+The probability density function for the normal distribution is: $$P(x)=\frac{1}{\sigma \sqrt{2 \pi}}e^{- \frac{\left( {x - \mu } \right)^2}{2\sigma ^2}}$$ where $\mu$ is the theoretical mean and $\sigma$ the standard deviation. Using the sliders, in the App the user can choose a value for both the parameters and look at how the shape of the distribution changes.
+```{r fig.height = 3, fig.width = 13, fig.align='center'}
+curve(dnorm(x, -5, 1),   col = "forestgreen", lwd=2, xlim=c(-10,20), bty="l", ylab="Density", xlab="Real numbers")
+curve(dnorm(x, 10, 2.5), col = "tomato", lwd=2, add=TRUE)
+```
+
+--- 
+
+## Choose the sample size
+A sample extracted from a normal population results normally distributed itself. The larger the sample, the better is the approximation to the theorethical distribution. The App allows the user to choose the sample size and to look at the differences between empirical and theoretical distribution.
+
+```{r fig.height = 3, fig.width = 4, fig.align='center'}
+small <- rnorm(10, 9, 1)
+curve(dnorm(x, 9, 1), col = "forestgreen", lty = 2, lwd = 2, xlim=c(5,15), ylim=c(0, 0.8), bty="l", ylab="Density", xlab="")
+lines(density(small), col = "tomato", lwd = 2)
+```
+
+--- 
+
+## Look at the interactive graphs
+The App returns an interactive visualization of both the sample and the teoretical distribution.
+The visualization is composed by a boxplot, a histogram and a kernel density plot.
+
+```{r echo=FALSE, fig.width=10, fig.height = 5, fig.align='center'}
+set.seed(12)
+X<-rnorm(100, 5, 1)
+mat <- matrix(c(1,2,4,3), 2)
+layout(mat, c(3.5,1), c(1,3))
+par(mar=c(0, 4.5, 0, 0.5))
+boxplot(X, ylim=c(0,10), horizontal=TRUE, axes=FALSE,col=rgb(0,0.4,0, 0.3), border=rgb(0,0.4,0.3,0.8), bty="n")
+abline(v=as.numeric(summary(X))[2:5], lty=2, col = c(rgb(0,0.4,0.3,0.7),rgb(0,0.4,0.3,0.7),rgb(0.7,0.1,0.2,0.8),rgb(0,0.4,0.3,0.7)))
+par(mar=c(4.5, 4.5, 0.5, 0.5))
+hist(X, prob=TRUE, col=rgb(0,0.4,0, 0.3), 
+border=rgb(0,0.4,0.3,0.4),
+xlim=c(0,10), ylim=c(0,0.8),
+main=NULL, xlab="")
+rug(X, col=rgb(0,0.4,0.3,0.4))
+abline(v=as.numeric(summary(X))[2:5], lty=2, col = c(rgb(0,0.4,0.3,0.7),rgb(0,0.4,0.3,0.7),rgb(0.7,0.1,0.2,0.8),rgb(0,0.4,0.3,0.7)))
+lines(density(X, adjust=2), col=rgb(0,0.4,0.3,0.4), lwd=2)
+par(mar=c(4.5, 0.5, 0.5, 0.5))
+curve(dnorm(x,5,1),col=rgb(0,0.4,0.3,0.7), lwd=2 ,
+xlim=c(5-4,5+4), ylim=c(0,0.7), axes=FALSE, main=NULL, xlab="", ylab="")
+lines(density(X), col = rgb(0.7,0.1,0.2,0.8), lwd=2, lty=2)
+plot(1:10,1:10, axes = FALSE, xlab="", ylab="", type="n")
+text(5, 5, paste("Mean =", round(mean(X), 2)), cex=1)
+text(5, 2, paste("Std. Dev. =", round(sd(X), 2)), cex=1)
+text(5, 9, "Empirical Values", cex=1.3)
+``` 
